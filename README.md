@@ -26,12 +26,13 @@ This script enables a **Play → Alt+F4 → Direct Merge** workflow:
 
 ---
 
-## 📥 Installation
+## 📥 Installation & Setup
 
 1. Download [`duckstation_auto_recorder.lua`](./duckstation_auto_recorder.lua) from this repository.
 2. In OBS Studio, go to **Tools** → **Scripts**.
 3. Click the **`+`** icon in the bottom-left corner and select `duckstation_auto_recorder.lua`.
-4. Make sure your DuckStation capture source (Window Capture or Game Capture) is active in your OBS scene.
+4. Add a **Game Capture** source (`Захват игры`) to your active OBS scene and set it to capture DuckStation.
+   > 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
 5. You're all set!
 
 ---
