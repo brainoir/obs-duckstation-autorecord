@@ -1,6 +1,6 @@
 # 🦆 DuckStation Auto-Recorder & Dynamic Namer for OBS Studio
 
-A lightweight, zero-dependency Lua script for OBS Studio that automates recording and file naming specifically for the **DuckStation** PS1 emulator. Designed with a **LosslessCut** workflow in mind for low-end PCs and rapid content creation without heavy video editors.
+A lightweight, zero-dependency Lua script for OBS Studio that automates recording and output file naming specifically for the **DuckStation** PS1 emulator. Designed with a **LosslessCut** workflow in mind for low-end PCs and rapid content creation without heavy video editors.
 
 ---
 
@@ -9,20 +9,20 @@ A lightweight, zero-dependency Lua script for OBS Studio that automates recordin
 Traditional recording often requires manual clipping, complex scene switchers, or heavy video editing software (Premiere, DaVinci, Vegas) that can strain low-end or mid-range PCs. 
 
 This script enables a **Play → Alt+F4 → Direct Merge** workflow:
-1. Launch DuckStation and start playing. Recording starts **automatically** only when 3D rendering begins.
-2. Stop playing instantly by pressing **Alt+F4** or exiting to the launcher. The recording terminates cleanly within milliseconds without trailing black frames or frozen video.
-3. Your output videos are automatically named after the actual game title (e.g., `Ace Combat 2 - 2026-07-26_17-00-00.mp4`).
-4. Simply open your output folder, sort by name or date, delete bad takes, and batch-join your clean MP4 files instantly in **[LosslessCut](https://github.com/mifi/lossless-cut)** without re-encoding!
+1. Launch DuckStation and start playing.
+2. Hit Record in OBS (or trigger it automatically) — the script instantly detects DuckStation's running game window title.
+3. Your output video is dynamically named after the clean game title (e.g., `Ace Combat 2 - 2026-07-27_14-30-00.mp4`).
+4. Stop playing instantly by pressing **Alt+F4** or exiting to the launcher. The recording terminates cleanly within milliseconds without trailing black frames or frozen video.
+5. Simply open your output folder, sort by name or date, delete bad takes, and batch-join your clean MP4 files instantly in **[LosslessCut](https://github.com/mifi/lossless-cut)** without re-encoding!
 
 ---
 
 ## ✨ Key Features
 
-- **⚡ Instant Start & Stop:** Auto-starts recording when a game boots up, and stops cleanly within ~100-300ms upon closing or pressing `Alt+F4`.
-- **🏷️ Dynamic Game Title Detection:** Automatically sets the output filename formatting prefix to the current game's title (strips disc IDs like `[SLUS-00404]` and invalid OS characters).
-- **🛡️ Smart Dialog & UI Filtering:** Strictly ignores DuckStation's main launcher window, background Qt windows (`_q_titlebar`, `Temp Window`), and modal dialogs like *"Resume Save State"* or *"Settings"* to prevent false starts or corrupted takes.
-- **🌐 UTF-8 Crash Protection:** Built-in Win32 API Unicode (`GetWindowTextW` → `WideCharToMultiByte`) conversion prevents `obs-websocket` and OBS crashes when game titles or system prompts contain non-ASCII (Cyrillic, CJK, etc.) characters.
-- **🚀 Ultra Lightweight:** Zero external plugins required. Native Lua execution with built-in memory buffer protection.
+- **🏷️ Dynamic Game Title Auto-Naming:** Hooks into OBS's `RECORDING_STARTING` event and inspects DuckStation's active window title via Win32 API. Sets `FilenameFormatting` automatically on the fly.
+- **🧹 Smart Title Cleaning:** Strips emulator artifacts, disc IDs (`[SLUS-00404]`, `(SLES-12345)`), background Windows IME windows, and illegal OS filename characters (`/:*?"<>|\`).
+- **⚡ Instant Start & Stop:** Auto-starts/stops cleanly without freezing or trailing black screen delays when exiting via `Alt+F4`.
+- **🚀 Zero Dependencies:** Built using native Lua and Win32 FFI for ultra-low memory overhead and maximum stability.
 
 ---
 
@@ -40,12 +40,15 @@ This script enables a **Play → Alt+F4 → Direct Merge** workflow:
 ## 🛠️ How It Works (LosslessCut Workflow)
 
 ```
-[ DuckStation ] --(Play Game)--> OBS Auto-Starts + Sets Filename ("Ace Combat 2 - Date")
-        |
-   (Press Alt+F4)
-        |
-        v
-OBS Auto-Stops cleanly (~100ms) --> MP4 file saved ready for LosslessCut!
+[ DuckStation Launch ] --> OBS Record Triggered --> Script Extracts Clean Title ("Ace Combat 2")
+                                                            |
+                                                            v
+                                            OBS Saves Video as "Ace Combat 2 - Date.mp4"
+                                                            |
+                                                    (Press Alt+F4)
+                                                            |
+                                                            v
+                                            Ready for instant LosslessCut merge!
 ```
 
 ---
