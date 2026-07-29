@@ -68,7 +68,8 @@ Using just one hotkey (**`F1`** to Save State), this linear workflow ensures 100
         in LosslessCut
 ```
 
-* **On Success:** Finish the mission $\rightarrow$ press **`F1`** to save your clean progress $\rightarrow$ hit **`Alt+F4`** to close DuckStation and finalize the MP4 file (or just stop recording in OBS).
+* **On Success:** Finish the mission $\rightarrow$ press **`F1`** to save your clean progress $\rightarrow$ hit **`Alt+F4`** to close DuckStation and finalize the MP4 file.
+  > ⚠️ **DO NOT click "Stop Recording" in the OBS UI!** If your auto-record trigger is active, hitting stop manually will just instantly start a new recording loop because the game is still running. Always use `Alt+F4` to cleanly cut the recording.
 * **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, and try again from your last clean state!
 
 ---
