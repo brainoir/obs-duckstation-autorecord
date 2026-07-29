@@ -36,7 +36,12 @@ This script enables a **Play → F2 (Split) → Alt+F4 → Direct Merge** workfl
 > 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
 
 
-5. **🔥 The Secret Workflow Trick:** Go to OBS **Settings** → **Hotkeys** and assign the **`F2`** key to **"Stop Recording"** (`Остановить запись`). (See *How It Works* below to understand why).
+5. **⚙️ Critical Game Capture Settings (Fixes Black Screen Delay):** Double-click your Game Capture source and change these settings to ensure the video hooks instantly without audio desync:
+* Set **Hook Rate** (`Частота захвата`) to **Fastest** (`Самая быстрая`).
+* Uncheck **Use anti-cheat compatibility hook** (`Использовать перехватчик, совместимый с античитами`).
+
+
+6. **🔥 The Secret Workflow Trick:** Go to OBS **Settings** → **Hotkeys** and assign the **`F2`** key to **"Stop Recording"** (`Остановить запись`). (See *How It Works* below to understand why).
 
 ---
 
@@ -71,6 +76,7 @@ By assigning **`F2`** to **Stop Recording** in OBS, we match DuckStation’s def
               v
      Clean MP4 saved! Move 
     on to the next mission.
+
 
 ```
 
