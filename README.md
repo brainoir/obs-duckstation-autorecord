@@ -1,7 +1,3 @@
-Прошу прощения, опять наступил на те же грабли с оберткой кода! Вывожу текст начисто, без внешних кавычек, чтобы ничего не поплыло при копировании.
-
----
-
 # 🦆 DuckStation Auto-Recorder & Dynamic Namer for OBS Studio
 
 A lightweight, zero-dependency Lua script for OBS Studio that automates recording and output file naming specifically for the **DuckStation** PS1 emulator. Designed with a **LosslessCut** workflow in mind for low-end PCs and rapid content creation without heavy video editors.
@@ -37,13 +33,15 @@ This script enables a **Play → F2 (Split) → Alt+F4 → Direct Merge** workfl
 2. In OBS Studio, go to **Tools** → **Scripts**.
 3. Click the **`+`** icon in the bottom-left corner and select `duckstation_auto_recorder.lua`.
 4. Add a **Game Capture** source (`Захват игры`) to your active OBS scene and set it to capture DuckStation.
+
 > 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
 
+5. **⚙️ Critical Game Capture Settings (Minimizing Hook Delay):** Double-click your Game Capture source and change these settings to force OBS to hook into the game as fast as possible:
 
-5. **⚙️ Critical Game Capture Settings (Fixes Black Screen Delay):** Double-click your Game Capture source and change these settings to ensure the video hooks instantly without audio desync:
 * Set **Hook Rate** (`Частота захвата`) to **Fastest** (`Самая быстрая`).
 * Uncheck **Use anti-cheat compatibility hook** (`Использовать перехватчик, совместимый с античитами`).
 
+> 💡 **Hardware Note:** Even with the fastest hook rate, OBS requires time to inject its capture DLL into the emulator's 3D rendering engine. You may still experience a **1 to 3-second black screen** at the very beginning of your *first* recording loop. This is a known hardware/OBS bottleneck, not a script bug, and may be less noticeable on higher-end CPUs/GPUs.
 
 6. **🔥 The Secret Workflow Trick:** Go to OBS **Settings** → **Hotkeys** and assign the **`F2`** key to **"Stop Recording"** (`Остановить запись`). (See *How It Works* below to understand why).
 
@@ -86,12 +84,18 @@ By assigning **`F2`** to **Stop Recording** in OBS, we match DuckStation’s def
 ### The Logic:
 
 * **On Success:** Finish the level/mission and press **`F2`**. DuckStation will safely save your state, and OBS will instantly stop the recording, finalizing your perfect run into a clean MP4 file.
-> *Note:* Because the script is designed to always record when the game is running, stopping the recording via `F2` will immediately trigger the script to **start a new recording**. This is not a bug; it's a feature that prepares OBS for your next mission automatically!
 
+> *Note:* Because the script is designed to always record when the game is running, stopping the recording via `F2` will immediately trigger the script to **start a new recording**. This is not a bug; it's a feature that prepares OBS for your next mission automatically!
 
 * **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, load your last save, and try again!
 
 > ⚠️ **The "Junk File" Caveat:** Because pressing `F2` stops the current recording and instantly starts a new one, when you decide to finally end your gaming session by pressing `Alt+F4`, that *very last* video file generated in the background will be an unplanned/invalid clip. You will just need to **manually delete this single trailing junk file** at the end of your session. It's a very small trade-off for a fully automated, hands-free splitting workflow!
+
+### ✂️ Pro-Tip: Mastering the "Invisible" Cut
+
+Because video encoders (like NVENC or x264) rely on Keyframes (I-Frames), splitting a video instantly without re-encoding (Direct Stream Copy) is not 100% frame-perfect. You might notice a microscopic gap of **0.1 to 0.5 seconds** at your split points.
+
+**How to make it unnoticeable:** To achieve a truly flawless final video, make a habit of pressing your `F2` split button during **loading screens, static camera angles, inventory menus, or quiet moments** where there is no intense action or continuous background music. When merged in LosslessCut, this tiny gap will be completely imperceptible!
 
 ---
 
@@ -104,10 +108,10 @@ DuckStation natively uses the `F1`-`F4` row for state management by default (`F1
 
 1. **The OBS Double-Bind:** In OBS **Settings → Hotkeys → Stop Recording**, click the **`+`** icon next to your `F2` bind. Add another key (for example, `F3` or a custom secondary save key). OBS allows multiple keys for the exact same action!
 2. **The Algorithm (Alternating):**
+
 * *Segment 1 Success:* Press **`F4`** (switch to Slot 2) → Press **`F2`** to Save & Split Video.
 * *Segment 2 Success:* Press **`F3`** (switch to Slot 1) → Press **`F2`** to Save & Split Video.
 * *(Alternatively, map DuckStation's direct saves: Slot 1 to `F2`, Slot 2 to `F3`, and bind BOTH in OBS!)*
-
 
 3. **Fail-Safe Recovery:** If you accidentally panic-save right as you die, your previous clean save is completely safe in the backup slot. Just hit `Alt+F4`, delete the bad MP4 file, load your safe backup slot, and continue seamlessly!
 
