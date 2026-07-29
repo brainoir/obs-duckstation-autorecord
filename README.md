@@ -6,33 +6,37 @@ A lightweight, zero-dependency Lua script for OBS Studio that automates recordin
 
 ## 💡 Why This Script?
 
-Traditional recording often requires manual clipping, complex scene switchers, or heavy video editing software (Premiere, DaVinci, Vegas) that can strain low-end or mid-range PCs. 
+Traditional recording often requires manual clipping, complex scene switchers, or heavy video editing software (Premiere, DaVinci, Vegas) that can strain low-end or mid-range PCs.
 
-This script enables a **Play → Alt+F4 → Direct Merge** workflow:
+This script enables a **Play → F2 (Split) → Alt+F4 → Direct Merge** workflow:
+
 1. Launch DuckStation and start playing.
 2. Hit Record in OBS (or trigger it automatically) — the script instantly detects DuckStation's running game window title.
 3. Your output video is dynamically named after the clean game title (e.g., `Ace Combat 2 - 2026-07-27_14-30-00.mp4`).
-4. Stop playing instantly by pressing **Alt+F4** or exiting to the launcher. The recording terminates cleanly within milliseconds without trailing black frames or frozen video.
+4. Our clever "Double-Bind" workflow automatically splits successful missions into perfect individual clips.
 5. Simply open your output folder, sort by name or date, delete bad takes, and batch-join your clean MP4 files instantly in **[LosslessCut](https://github.com/mifi/lossless-cut)** without re-encoding!
 
 ---
 
 ## ✨ Key Features
 
-- **🏷️ Dynamic Game Title Auto-Naming:** Hooks into OBS's `RECORDING_STARTING` event and inspects DuckStation's active window title via Win32 API. Sets `FilenameFormatting` automatically on the fly.
-- **🧹 Smart Title Cleaning:** Strips emulator artifacts, disc IDs (`[SLUS-00404]`, `(SLES-12345)`), background Windows IME windows, and illegal OS filename characters (`/:*?"<>|\`).
-- **⚡ Instant Start & Stop:** Auto-starts/stops cleanly without freezing or trailing black screen delays when exiting via `Alt+F4`.
-- **🚀 Zero Dependencies:** Built using native Lua and Win32 FFI for ultra-low memory overhead and maximum stability.
+* **🏷️ Dynamic Game Title Auto-Naming:** Hooks into OBS's `RECORDING_STARTING` event and inspects DuckStation's active window title via Win32 API. Sets `FilenameFormatting` automatically on the fly.
+* **🧹 Smart Title Cleaning:** Strips emulator artifacts, disc IDs (`[SLUS-00404]`, `(SLES-12345)`), background Windows IME windows, and illegal OS filename characters (`/:*?"<>|\`).
+* **⚡ Instant Start & Stop:** Auto-starts/stops cleanly without freezing or trailing black screen delays when exiting via `Alt+F4`.
+* **🚀 Zero Dependencies:** Built using native Lua and Win32 FFI for ultra-low memory overhead and maximum stability.
 
 ---
 
 ## 📥 Installation & Setup
 
-1. Download [`duckstation_auto_recorder.lua`](./duckstation_auto_recorder.lua) from this repository.
+1. Download [`duckstation_auto_recorder.lua`](https://www.google.com/search?q=./duckstation_auto_recorder.lua) from this repository.
 2. In OBS Studio, go to **Tools** → **Scripts**.
 3. Click the **`+`** icon in the bottom-left corner and select `duckstation_auto_recorder.lua`.
 4. Add a **Game Capture** source (`Захват игры`) to your active OBS scene and set it to capture DuckStation.
-   > 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
+> 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
+
+
+5. **🔥 The Secret Workflow Trick:** Go to OBS **Settings** → **Hotkeys** and assign the **`F2`** key to **"Stop Recording"** (`Остановить запись`). (See *How It Works* below to understand why).
 
 ---
 
@@ -46,11 +50,11 @@ To ensure **Alt+F4** closes the emulator instantly without prompting or saving b
 
 ---
 
-## 🛠️ How It Works (Fail-Safe Recording Workflow)
+## 🛠️ How It Works (The "F2 Double-Bind" Trick)
 
-Using just one hotkey (**`F2`** to Save State), this linear workflow ensures 100% clean recordings per mission/level:
+By assigning **`F2`** to **Stop Recording** in OBS, we match DuckStation’s default **Save State (Slot 1)** hotkey. This creates a powerful, linear workflow that perfectly isolates your successful runs:
 
-```
+```text
                   [ Play Mission / Level ]
                  (OBS is Auto-Recording)
                             |
@@ -58,27 +62,35 @@ Using just one hotkey (**`F2`** to Save State), this linear workflow ensures 100
               |                           |
        (Mission Success)            (Mission Failed)
               |                           |
-       1. Press F2 to Save          1. Press Alt+F4 Instantly
-       2. Press Alt+F4 to Close     2. Delete the Bad MP4 File
+      1. Press F2 instantly!        1. Press Alt+F4 Instantly
+   (Saves State + Stops Record)     2. Delete the Bad MP4 File
               |                           |
-       Keeps Clean MP4 File         (Ready to reload and retry)
+      OBS Script Instantly          (Ready to reload and retry)
+     Starts a NEW Recording
               |
               v
-   [ Batch-Merge Clean MP4s ]
-        in LosslessCut
+     Clean MP4 saved! Move 
+    on to the next mission.
+
 ```
 
-* **On Success:** Finish the mission $\rightarrow$ press **`F2`** to save your clean progress $\rightarrow$ hit **`Alt+F4`** to close DuckStation and finalize the MP4 file.
-  > ⚠️ **DO NOT click "Stop Recording" in the OBS UI!** If your auto-record trigger is active, hitting stop manually will just instantly start a new recording loop because the game is still running. Always use `Alt+F4` to cleanly cut the recording.
-* **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, and try again from your last clean state!
+### The Logic:
+
+* **On Success:** Finish the level/mission and press **`F2`**. DuckStation will safely save your state, and OBS will instantly stop the recording, finalizing your perfect run into a clean MP4 file.
+> *Note:* Because the script is designed to always record when the game is running, stopping the recording via `F2` will immediately trigger the script to **start a new recording**. This is not a bug; it's a feature that prepares OBS for your next mission automatically!
+
+
+* **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, load your last save, and try again!
+
+> ⚠️ **The "Junk File" Caveat:** Because pressing `F2` stops the current recording and instantly starts a new one, when you decide to finally end your gaming session by pressing `Alt+F4`, that *very last* video file generated in the background will be an unplanned/invalid clip. You will just need to **manually delete this single trailing junk file** at the end of your session. It's a very small trade-off for a fully automated, hands-free splitting workflow!
 
 ---
 
 ## 🖥️ System Requirements
 
-- **OS:** Windows 10 / 11 (64-bit)
-- **OBS Studio:** 28.0+ or newer
-- **Emulator:** DuckStation (Qt version)
+* **OS:** Windows 10 / 11 (64-bit)
+* **OBS Studio:** 28.0+ or newer
+* **Emulator:** DuckStation (Qt version)
 
 ---
 
