@@ -33,23 +33,45 @@ This script enables a **Play → Alt+F4 → Direct Merge** workflow:
 3. Click the **`+`** icon in the bottom-left corner and select `duckstation_auto_recorder.lua`.
 4. Add a **Game Capture** source (`Захват игры`) to your active OBS scene and set it to capture DuckStation.
    > 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
-5. You're all set!
 
 ---
 
-## 🛠️ How It Works (LosslessCut Workflow)
+## ⚙️ Recommended DuckStation Settings (Required for Alt+F4 Workflow)
+
+To ensure **Alt+F4** closes the emulator instantly without prompting or saving bad/failed attempts:
+
+1. Open DuckStation **Settings** (`Настройки`) → **Interface** (`Интерфейс`).
+2. Uncheck **Confirm Power Off / Exit** (`Запрашивать подтверждение при выключении / закрытии`).
+3. Uncheck **Save State on Exit** (`Сохранять состояние при выходе / выключении`).
+
+---
+
+## 🛠️ How It Works (Fail-Safe Recording Workflow)
+
+Using DuckStation's default hotkeys (**`F1`** to Load State and **`F2`** to Save State), this workflow ensures 100% clean recordings per mission/level:
 
 ```
-[ DuckStation Launch ] --> OBS Record Triggered --> Script Extracts Clean Title ("Ace Combat 2")
-                                                            |
-                                                            v
-                                            OBS Saves Video as "Ace Combat 2 - Date.mp4"
-                                                            |
-                                                    (Press Alt+F4)
-                                                            |
-                                                            v
-                                            Ready for instant LosslessCut merge!
+                  [ Start Game / Load Clean State (F1) ]
+                                    |
+                                    v
+                  [ OBS Records & Auto-Names Output File ]
+                                    |
+                      +-------------+-------------+
+                      |                           |
+               (Mission Success)            (Mission Failed)
+                      |                           |
+             Press Alt+F4 to Close        Press Alt+F4 Immediately
+                      |                           |
+             Keep Clean MP4 File         Delete Bad MP4 File
+                      |                           |
+                      +-------------+-------------+
+                                    |
+                                    v
+                 [ Batch-Merge Clean MP4s in LosslessCut ]
 ```
+
+* **On Success:** Finish the level/mission $\rightarrow$ hit `Alt+F4`. OBS cleanly stops and saves your video.
+* **On Failure (Death/Mistake):** Hit `Alt+F4` instantly. OBS stops recording. Delete the single bad MP4 take, relaunch DuckStation, press **`F1`** to load your clean save state, and try again!
 
 ---
 
