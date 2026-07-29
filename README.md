@@ -1,3 +1,7 @@
+Прошу прощения, опять наступил на те же грабли с оберткой кода! Вывожу текст начисто, без внешних кавычек, чтобы ничего не поплыло при копировании.
+
+---
+
 # 🦆 DuckStation Auto-Recorder & Dynamic Namer for OBS Studio
 
 A lightweight, zero-dependency Lua script for OBS Studio that automates recording and output file naming specifically for the **DuckStation** PS1 emulator. Designed with a **LosslessCut** workflow in mind for low-end PCs and rapid content creation without heavy video editors.
@@ -77,7 +81,6 @@ By assigning **`F2`** to **Stop Recording** in OBS, we match DuckStation’s def
      Clean MP4 saved! Move 
     on to the next mission.
 
-
 ```
 
 ### The Logic:
@@ -89,6 +92,24 @@ By assigning **`F2`** to **Stop Recording** in OBS, we match DuckStation’s def
 * **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, load your last save, and try again!
 
 > ⚠️ **The "Junk File" Caveat:** Because pressing `F2` stops the current recording and instantly starts a new one, when you decide to finally end your gaming session by pressing `Alt+F4`, that *very last* video file generated in the background will be an unplanned/invalid clip. You will just need to **manually delete this single trailing junk file** at the end of your session. It's a very small trade-off for a fully automated, hands-free splitting workflow!
+
+---
+
+## 🛡️ The "Death-Save" Trap & Backup Slots
+
+**The Problem:** If you strictly use a single save slot, you risk a catastrophic "soft-lock". If you reflexively press `F2` a split-second before dying or failing a mission, you will overwrite your only clean save. Your flawless video run is ruined, and you will have to restart the entire game or level!
+
+**The Solution (Alternating Slots):**
+DuckStation natively uses the `F1`-`F4` row for state management by default (`F1` = Load, `F2` = Save, `F3` = Previous Slot, `F4` = Next Slot). To keep your video workflow safe without breaking your habitual hotkeys, use a **multi-bind** in OBS!
+
+1. **The OBS Double-Bind:** In OBS **Settings → Hotkeys → Stop Recording**, click the **`+`** icon next to your `F2` bind. Add another key (for example, `F3` or a custom secondary save key). OBS allows multiple keys for the exact same action!
+2. **The Algorithm (Alternating):**
+* *Segment 1 Success:* Press **`F4`** (switch to Slot 2) → Press **`F2`** to Save & Split Video.
+* *Segment 2 Success:* Press **`F3`** (switch to Slot 1) → Press **`F2`** to Save & Split Video.
+* *(Alternatively, map DuckStation's direct saves: Slot 1 to `F2`, Slot 2 to `F3`, and bind BOTH in OBS!)*
+
+
+3. **Fail-Safe Recovery:** If you accidentally panic-save right as you die, your previous clean save is completely safe in the backup slot. Just hit `Alt+F4`, delete the bad MP4 file, load your safe backup slot, and continue seamlessly!
 
 ---
 
