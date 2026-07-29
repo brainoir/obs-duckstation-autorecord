@@ -48,7 +48,7 @@ To ensure **Alt+F4** closes the emulator instantly without prompting or saving b
 
 ## 🛠️ How It Works (Fail-Safe Recording Workflow)
 
-Using just one hotkey (**`F1`** to Save State), this linear workflow ensures 100% clean recordings per mission/level:
+Using just one hotkey (**`F2`** to Save State), this linear workflow ensures 100% clean recordings per mission/level:
 
 ```
                   [ Play Mission / Level ]
@@ -58,7 +58,7 @@ Using just one hotkey (**`F1`** to Save State), this linear workflow ensures 100
               |                           |
        (Mission Success)            (Mission Failed)
               |                           |
-       1. Press F1 to Save          1. Press Alt+F4 Instantly
+       1. Press F2 to Save          1. Press Alt+F4 Instantly
        2. Press Alt+F4 to Close     2. Delete the Bad MP4 File
               |                           |
        Keeps Clean MP4 File         (Ready to reload and retry)
@@ -68,7 +68,7 @@ Using just one hotkey (**`F1`** to Save State), this linear workflow ensures 100
         in LosslessCut
 ```
 
-* **On Success:** Finish the mission $\rightarrow$ press **`F1`** to save your clean progress $\rightarrow$ hit **`Alt+F4`** to close DuckStation and finalize the MP4 file.
+* **On Success:** Finish the mission $\rightarrow$ press **`F2`** to save your clean progress $\rightarrow$ hit **`Alt+F4`** to close DuckStation and finalize the MP4 file.
   > ⚠️ **DO NOT click "Stop Recording" in the OBS UI!** If your auto-record trigger is active, hitting stop manually will just instantly start a new recording loop because the game is still running. Always use `Alt+F4` to cleanly cut the recording.
 * **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, and try again from your last clean state!
 
