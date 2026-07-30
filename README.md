@@ -160,7 +160,19 @@ Once configured, put your keyboard away. You are ready for a hands-free recordin
 * **Emulator:** DuckStation (Qt Version)
 * **Gamepad Mapper:** AntiMicroX 3.1+
 
+
 ---
+
+### 📌 Note on Repository Files (Which script do you need?)
+
+* **`duckstation_auto_recorder.lua`** *(Main / Recommended)* — **The Ultimate Script.** Contains full OBS auto-record integration, automatic game title detection/renaming, and loss-free split management. **Use this for the complete setup described above.**
+* **`auto_name.lua`** *(Standalone / Lightweight)* — **Standalone Auto-Naming Only.** This is the original, lightweight script that started it all. It *only* dynamic-names output video files based on DuckStation's active title without managing auto-recording or hotkey splits.
+> ⚠️ **DO NOT download `auto_name.lua` if you are using the main setup!** The full dynamic auto-naming logic is already built inside `duckstation_auto_recorder.lua`. Downloading both will cause duplicate hooks in OBS.
+
+
+
+---
+
 
 ## 📄 License
 
