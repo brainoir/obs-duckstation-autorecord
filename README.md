@@ -1,119 +1,155 @@
-# 🦆 DuckStation Auto-Recorder & Dynamic Namer for OBS Studio
+# 🦆 DuckStation Auto-Recorder & No-Edit Video Producer for OBS Studio
 
-A lightweight, zero-dependency Lua script for OBS Studio that automates recording and output file naming specifically for the **DuckStation** PS1 emulator. Designed with a **LosslessCut** workflow in mind for low-end PCs and rapid content creation without heavy video editors.
+A lightweight, zero-dependency Lua script for OBS Studio combined with an AntiMicroX gamepad profile. Designed specifically for **DuckStation** (PS1 Emulator) to enable a **pure, hands-free "Clean Gameplay / Longplay" production workflow** without the need for manual video editing.
 
 ---
 
-## 💡 Why This Script?
+## 💡 What Is This Setup For?
 
-Traditional recording often requires manual clipping, complex scene switchers, or heavy video editing software (Premiere, DaVinci, Vegas) that can strain low-end or mid-range PCs.
+This setup is built for true old-school gamers, speedrunners, and content creators who want to record **flawless, deathless PS1 playthroughs** (Longplays, No-Damage runs) without touching a keyboard or spending hours cutting video files in heavy editors (Premiere, DaVinci, Vegas).
 
-This script enables a **Play → F2 (Split) → Alt+F4 → Direct Merge** workflow:
+Forget stopping the game to manage OBS. Forget bad takes ruining a 2-hour recording. With this setup:
 
-1. Launch DuckStation and start playing.
-2. Hit Record in OBS (or trigger it automatically) — the script instantly detects DuckStation's running game window title.
-3. Your output video is dynamically named after the clean game title (e.g., `Ace Combat 2 - 2026-07-27_14-30-00.mp4`).
-4. Our clever "Double-Bind" workflow automatically splits successful missions into perfect individual clips.
-5. Simply open your output folder, sort by name or date, delete bad takes, and batch-join your clean MP4 files instantly in **[LosslessCut](https://github.com/mifi/lossless-cut)** without re-encoding!
+* You focus **100% on the game** using only your PS4 controller.
+* Successful segments are instantly saved to alternating DuckStation slots **and** split into clean MP4 clips in OBS simultaneously.
+* Failed takes are instantly thrown out via `Alt+F4`.
+* Final videos are simply joined in **[LosslessCut](https://github.com/mifi/lossless-cut)** with zero re-encoding!
 
 ---
 
 ## ✨ Key Features
 
-* **🏷️ Dynamic Game Title Auto-Naming:** Hooks into OBS's `RECORDING_STARTING` event and inspects DuckStation's active window title via Win32 API. Sets `FilenameFormatting` automatically on the fly.
-* **🧹 Smart Title Cleaning:** Strips emulator artifacts, disc IDs (`[SLUS-00404]`, `(SLES-12345)`), background Windows IME windows, and illegal OS filename characters (`/:*?"<>|\`).
-* **⚡ Instant Start & Stop:** Auto-starts/stops cleanly without freezing or trailing black screen delays when exiting via `Alt+F4`.
-* **🚀 Zero Dependencies:** Built using native Lua and Win32 FFI for ultra-low memory overhead and maximum stability.
+* **🏷️ Dynamic Game Title Auto-Naming:** Automatically reads DuckStation's active window title via Win32 API and names output video files cleanly (e.g., `Tekken 3 - 2026-07-30_15-00-00.mp4`).
+* **🎮 100% Gamepad Control (AntiMicroX Integration):** Uses the PS4 **Touchpad** as a dedicated modifier button (`Held` / `Пока нажата`) to map hardware OBS split triggers without sacrificing a single PS1 button.
+* **🛡️ Fail-Safe Alternating Saves (`F9` / `F10` Double-Bind):** Never lose progress to a "Death-Save" trap! Alternates between Save Slot 1 and Save Slot 2 safely.
+* **🧹 Smart Title Cleaning:** Automatically strips disc IDs (`[SLUS-00404]`), emulator artifacts, and illegal OS characters.
+* **⚡ Zero-Latency FFI Architecture:** Written in native Lua using Win32 FFI for minimal system load—ideal for low-end or mid-range PCs.
+
+---
+
+## 🎮 The Ultimate Controller Setup: Touchpad Modifier Logic
+
+Why the PS4 **Touchpad**?
+Original PlayStation 1 controllers (Digital & DualAnalog/DualShock 1) only had 14 inputs. The PS4 Touchpad click **did not exist on the original PS1 hardware**.
+
+By using AntiMicroX, we assign the **Touchpad Click** as a high-priority **Set Selector Modifier (`Held` / `Пока нажата`)**. It acts like an invisible `Fn` key that changes the function of the L1 and L2 bumpers *only while physically pressed down*.
+
+```text
+========================================================================
+                      PS4 TOUCHPAD MODIFIER LOGIC
+========================================================================
+
+ [ NORMAL GAMEPLAY ]                             [ MODIFIER HELD ]
+ (Touchpad NOT pressed)                        (Touchpad Pressed DOWN)
+
+     L1 = Normal PS1 L1                             L1 = Key F9
+     L2 = Normal PS1 L2                             L2 = Key F10
+ 
+ (Game receives native                          (Triggers DuckStation
+   PS1 button inputs)                            Save + OBS Video Split)
+
+```
+
+### Double-Bind Hotkey Mapping:
+
+| Combination | Action in DuckStation | Action in OBS Studio | Result |
+| --- | --- | --- | --- |
+| **Touchpad + L1** | Save State to **Slot 1** (`F9`) | **Stop Recording** (`F9`) | Finalizes current clean MP4 clip & starts a new segment for Slot 1 |
+| **Touchpad + L2** | Save State to **Slot 2** (`F10`) | **Stop Recording** (`F10`) | Finalizes current clean MP4 clip & starts a new segment for Slot 2 |
 
 ---
 
 ## 📥 Installation & Setup
 
-1. Download [`duckstation_auto_recorder.lua`](https://www.google.com/search?q=./duckstation_auto_recorder.lua) from this repository.
-2. In OBS Studio, go to **Tools** → **Scripts**.
-3. Click the **`+`** icon in the bottom-left corner and select `duckstation_auto_recorder.lua`.
-4. Add a **Game Capture** source (`Захват игры`) to your active OBS scene and set it to capture DuckStation.
+### Step 1: OBS Studio Script Setup
 
-> 📌 **Important Setup Note:** Make sure to use **Game Capture** (`Захват игры`) rather than Display or Window Capture. Game Capture hooks directly into DuckStation's 3D rendering canvas, ensuring OBS only hooks the actual game viewport and bypasses the main launcher UI completely.
+1. Download `duckstation_auto_recorder.lua` from this repository.
+2. In OBS Studio, navigate to **Tools** → **Scripts**.
+3. Click the **`+`** icon and select `duckstation_auto_recorder.lua`.
+4. Add a **Game Capture** (`Захват игры`) source to your active scene and set it to capture DuckStation.
+> 📌 **Important:** Always use **Game Capture** instead of Window Capture. It hooks directly into DuckStation's 3D canvas, completely bypassing the launcher/UI windows.
 
-5. **⚙️ Critical Game Capture Settings (Minimizing Hook Delay):** Double-click your Game Capture source and change these settings to force OBS to hook into the game as fast as possible:
 
+5. In your Game Capture properties:
 * Set **Hook Rate** (`Частота захвата`) to **Fastest** (`Самая быстрая`).
 * Uncheck **Use anti-cheat compatibility hook** (`Использовать перехватчик, совместимый с античитами`).
 
-> 💡 **Hardware Note:** Even with the fastest hook rate, OBS requires time to inject its capture DLL into the emulator's 3D rendering engine. You may still experience a **1 to 3-second black screen** at the very beginning of your *first* recording loop. This is a known hardware/OBS bottleneck, not a script bug, and may be less noticeable on higher-end CPUs/GPUs.
 
-6. **🔥 The Secret Workflow Trick:** Go to OBS **Settings** → **Hotkeys** and assign the **`F2`** key to **"Stop Recording"** (`Остановить запись`). (See *How It Works* below to understand why).
+6. Go to OBS **Settings** → **Hotkeys** → Find **Stop Recording** (`Остановить запись`).
+7. Assign **BOTH** `F9` and `F10` to **Stop Recording** (click the `+` icon next to the keybind to add a second key).
+
+### Step 2: DuckStation Emulator Configuration
+
+1. Open DuckStation **Settings** (`Настройки`) → **Hotkeys** (`Горячие клавиши`).
+2. Map **Save State (Slot 1)** (`Сохранить состояние в ячейку 1`) to **`F9`**.
+3. Map **Save State (Slot 2)** (`Сохранить состояние в ячейку 2`) to **`F10`**.
+4. Go to **Settings** → **Interface** (`Интерфейс`):
+* Uncheck **Confirm Power Off / Exit** (`Запрашивать подтверждение при выключении / закрытии`).
+* Uncheck **Save State on Exit** (`Сохранять состояние при выходе / выключении`).
+
+
+
+### Step 3: AntiMicroX Controller Mapping
+
+1. Install **[AntiMicroX](https://github.com/AntiMicroX/antimicrox)**.
+2. Copy the included configuration file `ps4_TP+(L1=F9, L2=F10).gamecontroller.amgp` to your AntiMicroX profiles folder (or open it directly via **Load** / `Загрузить`).
+3. Verify that:
+* **Touchpad** is configured to `Set Set 2 Held` (`Установить набор 2 Пока нажато`).
+* In **Set 2**, **L1 / Left Bumper** is mapped to **`F9`**.
+* In **Set 2**, **L2 / Left Trigger** is mapped to **`F10`**.
+
+
+4. Minimize AntiMicroX to system tray.
 
 ---
 
-## ⚙️ Recommended DuckStation Settings (Required for Alt+F4 Workflow)
+## 🛠️ The Game Loop: How to Play and Record
 
-To ensure **Alt+F4** closes the emulator instantly without prompting or saving bad/failed attempts:
-
-1. Open DuckStation **Settings** (`Настройки`) → **Interface** (`Интерфейс`).
-2. Uncheck **Confirm Power Off / Exit** (`Запрашивать подтверждение при выключении / закрытии`).
-3. Uncheck **Save State on Exit** (`Сохранять состояние при выходе / выключении`).
-
----
-
-## 🛠️ How It Works (The "F2 Double-Bind" Trick)
-
-By assigning **`F2`** to **Stop Recording** in OBS, we match DuckStation’s default **Save State (Slot 1)** hotkey. This creates a powerful, linear workflow that perfectly isolates your successful runs:
+Once configured, put your keyboard away. You are ready for a hands-free recording session:
 
 ```text
-                  [ Play Mission / Level ]
-                 (OBS is Auto-Recording)
-                            |
-              +-------------+-------------+
-              |                           |
-       (Mission Success)            (Mission Failed)
-              |                           |
-      1. Press F2 instantly!        1. Press Alt+F4 Instantly
-   (Saves State + Stops Record)     2. Delete the Bad MP4 File
-              |                           |
-      OBS Script Instantly          (Ready to reload and retry)
-     Starts a NEW Recording
-              |
-              v
-     Clean MP4 saved! Move 
-    on to the next mission.
+                   [ START GAMEPLAY / MISSION ]
+                     (OBS is Auto-Recording)
+                                |
+             +------------------+------------------+
+             |                                     |
+      (Mission Success)                     (Mission Failed)
+             |                                     |
+  1. Hold Touchpad + Press L1            1. Hit Alt+F4 on keyboard
+     (Saves Slot 1 + Splits Video)          (Close DuckStation instantly)
+             OR                                    |
+  2. Hold Touchpad + Press L2            2. Delete bad take MP4 file
+     (Saves Slot 2 + Splits Video)                 |
+             |                           3. Relaunch DuckStation,
+    OBS Script Instantly                    load safe slot & retry
+    Starts NEW Recording
+             |
+             v
+   Clean MP4 clip saved! 
+  Continue to next section.
 
 ```
 
-### The Logic:
+### Workflow Rules:
 
-* **On Success:** Finish the level/mission and press **`F2`**. DuckStation will safely save your state, and OBS will instantly stop the recording, finalizing your perfect run into a clean MP4 file.
+1. **Alternating Slot Strategy:**
+* Complete Section 1 → Press **Touchpad + L1** (Saves Slot 1, splits MP4).
+* Complete Section 2 → Press **Touchpad + L2** (Saves Slot 2, splits MP4).
+* Alternate back and forth. If you ever panic-save right as you take damage or die, your previous segment's save is completely untouched in the alternate slot!
 
-> *Note:* Because the script is designed to always record when the game is running, stopping the recording via `F2` will immediately trigger the script to **start a new recording**. This is not a bug; it's a feature that prepares OBS for your next mission automatically!
 
-* **On Failure (Death/Mistake):** Hit **`Alt+F4`** instantly. Delete the single bad MP4 take, relaunch DuckStation, load your last save, and try again!
+2. **Failing a Take:**
+* If you make a mistake, die, or ruin a segment, close DuckStation via `Alt+F4`. Delete the single bad MP4 take from your recording folder, relaunch DuckStation, load your last valid save slot, and continue.
 
-> ⚠️ **The "Junk File" Caveat:** Because pressing `F2` stops the current recording and instantly starts a new one, when you decide to finally end your gaming session by pressing `Alt+F4`, that *very last* video file generated in the background will be an unplanned/invalid clip. You will just need to **manually delete this single trailing junk file** at the end of your session. It's a very small trade-off for a fully automated, hands-free splitting workflow!
 
-### ✂️ Pro-Tip: Mastering the "Invisible" Cut
+3. **Mastering the "Invisible Cut":**
+* Video encoders (like NVENC or x264) split at Keyframes (I-Frames). To make your video cuts 100% invisible when joined together, always trigger your save/split combo during **loading screens, black transitions, static camera cuts, or menu screens**.
 
-Because video encoders (like NVENC or x264) rely on Keyframes (I-Frames), splitting a video instantly without re-encoding (Direct Stream Copy) is not 100% frame-perfect. You might notice a microscopic gap of **0.1 to 0.5 seconds** at your split points.
 
-**How to make it unnoticeable:** To achieve a truly flawless final video, make a habit of pressing your `F2` split button during **loading screens, static camera angles, inventory menus, or quiet moments** where there is no intense action or continuous background music. When merged in LosslessCut, this tiny gap will be completely imperceptible!
+4. **Ending Your Session (Trailing File Cleanup):**
+* Because the OBS script automatically starts a new recording immediately whenever a split occurs, closing the game will leave one tiny trailing "junk" video file at the end of your session. Simply delete this final file, open **LosslessCut**, drop all your valid MP4 clips in, and click **Merge**!
 
----
 
-## 🛡️ The "Death-Save" Trap & Backup Slots
-
-**The Problem:** If you strictly use a single save slot, you risk a catastrophic "soft-lock". If you reflexively press `F2` a split-second before dying or failing a mission, you will overwrite your only clean save. Your flawless video run is ruined, and you will have to restart the entire game or level!
-
-**The Solution (Alternating Slots):**
-DuckStation natively uses the `F1`-`F4` row for state management by default (`F1` = Load, `F2` = Save, `F3` = Previous Slot, `F4` = Next Slot). To keep your video workflow safe without breaking your habitual hotkeys, use a **multi-bind** in OBS!
-
-1. **The OBS Double-Bind:** In OBS **Settings → Hotkeys → Stop Recording**, click the **`+`** icon next to your `F2` bind. Add another key (for example, `F3` or a custom secondary save key). OBS allows multiple keys for the exact same action!
-2. **The Algorithm (Alternating):**
-
-* *Segment 1 Success:* Press **`F4`** (switch to Slot 2) → Press **`F2`** to Save & Split Video.
-* *Segment 2 Success:* Press **`F3`** (switch to Slot 1) → Press **`F2`** to Save & Split Video.
-* *(Alternatively, map DuckStation's direct saves: Slot 1 to `F2`, Slot 2 to `F3`, and bind BOTH in OBS!)*
-
-3. **Fail-Safe Recovery:** If you accidentally panic-save right as you die, your previous clean save is completely safe in the backup slot. Just hit `Alt+F4`, delete the bad MP4 file, load your safe backup slot, and continue seamlessly!
 
 ---
 
@@ -121,7 +157,8 @@ DuckStation natively uses the `F1`-`F4` row for state management by default (`F1
 
 * **OS:** Windows 10 / 11 (64-bit)
 * **OBS Studio:** 28.0+ or newer
-* **Emulator:** DuckStation (Qt version)
+* **Emulator:** DuckStation (Qt Version)
+* **Gamepad Mapper:** AntiMicroX 3.1+
 
 ---
 
